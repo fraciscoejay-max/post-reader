@@ -2,6 +2,7 @@ import { isAxiosError } from 'axios'
 import { Link, useParams } from 'react-router'
 
 import { Button, buttonVariants } from '@/components/ui/button'
+import { CommentList } from '@/features/comments/CommentList'
 import { usePost } from '@/features/posts/posts.hooks'
 
 const toParagraphs = (body: string) =>
@@ -71,28 +72,32 @@ export function PostScreen() {
   const paragraphs = toParagraphs(post.body)
 
   return (
-    <article className="rounded-xl border border-border bg-card p-6 shadow-sm">
-      <p className="mb-2 text-sm font-medium uppercase tracking-[0.2em] text-muted-foreground">
-        Post #{post.id}
-      </p>
-      <h1 className="mt-6 text-3xl font-bold tracking-tight text-foreground">{post.title}</h1>
+    <>
+      <article className="rounded-xl border border-border bg-card p-6 shadow-sm">
+        <p className="mb-2 text-sm font-medium uppercase tracking-[0.2em] text-muted-foreground">
+          Post #{post.id}
+        </p>
+        <h1 className="mt-6 text-3xl font-bold tracking-tight text-foreground">{post.title}</h1>
 
-      <div className="mt-6 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-        <span>by</span>
-        <span className="font-medium text-foreground">User {post.userId}</span>
-      </div>
+        <div className="mt-6 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+          <span>by</span>
+          <span className="font-medium text-foreground">User {post.userId}</span>
+        </div>
 
-      <div className="mt-8 space-y-6 text-[1.0625rem] leading-8 text-foreground">
-        {paragraphs.length > 0 ? (
-          paragraphs.map((paragraph, index) => (
-            <p key={`${paragraph}-${index}`} className="text-pretty">
-              {paragraph}
-            </p>
-          ))
-        ) : (
-          <p>{post.body}</p>
-        )}
-      </div>
-    </article>
+        <div className="mt-8 space-y-6 text-[1.0625rem] leading-8 text-foreground">
+          {paragraphs.length > 0 ? (
+            paragraphs.map((paragraph, index) => (
+              <p key={`${paragraph}-${index}`} className="text-pretty">
+                {paragraph}
+              </p>
+            ))
+          ) : (
+            <p>{post.body}</p>
+          )}
+        </div>
+      </article>
+
+      <CommentList postId={post.id} />
+    </>
   )
 }
