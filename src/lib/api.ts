@@ -1,29 +1,48 @@
 import axios from 'axios'
 
+const apiBaseUrl =
+  import.meta.env.VITE_API_URL?.trim() || 'https://jsonplaceholder.typicode.com'
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+  baseURL: apiBaseUrl,
 })
 
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    const contentType = String(response.headers['content-type'] ?? '')
+
+    if (!contentType.includes('application/json')) {
+      throw new Error(
+        `Expected a JSON response from ${response.config.url}, but received ${contentType || 'an unknown content type'}. Check the VITE_API_URL deployment setting.`
+      )
+    }
+
+    return response
+  },
   (error) => {
-    const contentType = error?.response?.headers?.['content-type'] ?? ''
-
-    if (contentType.includes('application/json')) {
-      throw error
-    }
-
-    if (error?.response?.status === 200) {
-      throw new Error('Unexpected HTML response from the API.')
-    }
+    const contentType = String(error?.response?.headers?.['content-type'] ?? '')
 
     if (error?.response?.status === 404) {
-      throw error
+      return Promise.reject(error)
     }
 
-    throw new Error(
-      'The API is unavailable or returned an unexpected response. Please try again later.'
-    )
+    if (error?.response && !contentType.includes('application/json')) {
+      return Promise.reject(
+        new Error(
+          `The API at ${apiBaseUrl} returned HTTP ${error.response.status} with ${contentType || 'an unknown content type'}. Check the VITE_API_URL deployment setting.`
+        )
+      )
+    }
+
+    if (!error?.response) {
+      return Promise.reject(
+        new Error(
+          `Could not reach the API at ${apiBaseUrl}. Check the network connection and VITE_API_URL deployment setting.`
+        )
+      )
+    }
+
+    return Promise.reject(error)
   }
 )
 
