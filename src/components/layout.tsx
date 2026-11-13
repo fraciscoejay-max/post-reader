@@ -1,8 +1,11 @@
-import type { ReactNode } from 'react'
+import { Link, Outlet, useLocation } from 'react-router'
 
 import { ModeToggle } from '@/components/mode-toggle'
 
-export function Layout({ children }: { children: ReactNode }) {
+export function Layout() {
+  const { pathname } = useLocation()
+  const atRoot = pathname === '/'
+
   return (
     <div className="min-h-screen px-4 py-6">
       <div className="mx-auto max-w-5xl">
@@ -10,7 +13,18 @@ export function Layout({ children }: { children: ReactNode }) {
           <span className="text-lg font-semibold tracking-tight">Posts</span>
           <ModeToggle />
         </header>
-        <main>{children}</main>
+
+        <main>
+          {!atRoot && (
+            <div className="mb-4">
+              <Link to="/" className="text-sm text-muted-foreground hover:text-foreground">
+                ← Back to posts
+              </Link>
+            </div>
+          )}
+
+          <Outlet />
+        </main>
       </div>
     </div>
   )

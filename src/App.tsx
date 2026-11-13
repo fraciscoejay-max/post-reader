@@ -1,11 +1,17 @@
+import { Route, Routes } from 'react-router'
+
 import { Layout } from '@/components/layout'
-import { PostList } from '@/features/posts/PostList'
+import { HomeScreen } from '@/pages/HomeScreen'
+import { PostScreen } from '@/pages/PostScreen'
 
 function App() {
   return (
-    <Layout>
-      <PostList />
-    </Layout>
+    <Routes>
+      <Route element={<Layout />}>
+        <Route path="/" element={<HomeScreen />} />
+        <Route path="/posts/:id" element={<PostScreen />} />
+      </Route>
+    </Routes>
   )
 }
 
