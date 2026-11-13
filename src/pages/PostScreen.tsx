@@ -1,7 +1,10 @@
 import { isAxiosError } from 'axios'
 import { Link, useParams } from 'react-router'
 
+import { Avatar } from '@/components/avatar'
+import FormattedDate from '@/components/formatted-date'
 import { Button, buttonVariants } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
 import { CommentList } from '@/features/comments/CommentList'
 import { usePost } from '@/features/posts/posts.hooks'
 
@@ -18,14 +21,22 @@ export function PostScreen() {
 
   if (isPending) {
     return (
-      <div className="mt-6 flex flex-col gap-6" aria-busy="true" role="status">
-        <div className="h-4 w-16 animate-pulse rounded-md bg-muted" />
-        <div className="h-10 w-3/4 animate-pulse rounded-md bg-muted" />
+      <div className="space-y-6" aria-busy="true" role="status">
+        <div className="flex items-center gap-3">
+          <Skeleton className="h-8 w-8 rounded-full" />
+          <Skeleton className="h-6 w-28 rounded-md" />
+        </div>
+
+        <div className="space-y-3">
+          <Skeleton className="h-4 w-20 rounded-md" />
+          <Skeleton className="h-10 w-3/4 rounded-md" />
+        </div>
+
         <div className="grid gap-3">
-          <div className="h-4 w-full animate-pulse rounded-md bg-muted" />
-          <div className="h-4 w-full animate-pulse rounded-md bg-muted" />
-          <div className="h-4 w-2/3 animate-pulse rounded-md bg-muted" />
-          <div className="h-4 w-full animate-pulse rounded-md bg-muted" />
+          <Skeleton className="h-4 w-full rounded-md" />
+          <Skeleton className="h-4 w-full rounded-md" />
+          <Skeleton className="h-4 w-2/3 rounded-md" />
+          <Skeleton className="h-4 w-full rounded-md" />
         </div>
       </div>
     )
@@ -37,7 +48,9 @@ export function PostScreen() {
     return (
       <div className="mt-6 max-w-xl">
         <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
-          <p className="text-sm font-medium text-muted-foreground">Missing</p>
+          <p className="text-sm font-medium uppercase tracking-[0.2em] text-muted-foreground">
+            Missing
+          </p>
           <h1 className="mt-2 text-2xl font-semibold tracking-tight text-foreground">
             {isNotFound ? 'No post at this address' : 'The post didn’t load'}
           </h1>
@@ -69,7 +82,7 @@ export function PostScreen() {
     return <p className="text-muted-foreground">Post not found.</p>
   }
 
-  const paragraphs = toParagraphs(post.body)
+  const paragraphs = toParagraphs(post.body ?? '')
 
   return (
     <>
@@ -79,9 +92,16 @@ export function PostScreen() {
         </p>
         <h1 className="mt-6 text-3xl font-bold tracking-tight text-foreground">{post.title}</h1>
 
-        <div className="mt-6 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-          <span>by</span>
-          <span className="font-medium text-foreground">User {post.userId}</span>
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
+          <div className="flex items-center gap-3 text-sm text-muted-foreground">
+            <Avatar>{String(post.userId).slice(0, 1)}</Avatar>
+            <span className="font-medium text-foreground">User {post.userId}</span>
+          </div>
+
+          <FormattedDate
+            value={post.createdAt}
+            className="text-sm text-muted-foreground"
+          />
         </div>
 
         <div className="mt-8 space-y-6 text-[1.0625rem] leading-8 text-foreground">
